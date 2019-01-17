@@ -83,14 +83,14 @@ namespace MetricsDemo
                 vals.AddRange(routeData.Values.Values.Select(p => p.ToString()));
             }
 
-            keys.Add("method"); vals.Add(context.Request.Method);
-            keys.Add("response"); vals.Add(context.Response.StatusCode.ToString());
-            keys.Add("url"); vals.Add(context.Request.Path.Value);
+            keys.Add("method");     vals.Add(context.Request.Method);
+            keys.Add("response");   vals.Add(context.Response.StatusCode.ToString());
+            keys.Add("url");        vals.Add(context.Request.Path.Value);
 
             Program.Metrics.Measure.Counter.Increment(new CounterOptions
             {
                 Name = "api",
-                //ResetOnReporting = true,
+                //ResetOnReporting = true, // обнулять, если коллетор собрал данные
                 MeasurementUnit = Unit.Calls,
                 Tags = new MetricTags(keys.ToArray(), vals.ToArray())
             });

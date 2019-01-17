@@ -19,13 +19,13 @@ spec:
           ports:
             - containerPort: 9090
           volumeMounts:
-            - name: prometheus-config-volume
-              mountPath: /etc/config/
+            - name: prometheus-config-volume # какой вольюм монтировать
+              mountPath: /etc/config/ # в качестве какой директории
       volumes:
-        - name: prometheus-config-volume
+        - name: prometheus-config-volume # объявление вольюма в деплое
           configMap:
             defaultMode: 420
-            name: prometheus-config
+            name: prometheus-config # имя конфиг-маппы
 
 ---
 

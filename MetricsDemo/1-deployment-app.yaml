@@ -1,4 +1,5 @@
-﻿kind: Deployment
+﻿# описание того, что именно будет разворачиваться, какие разделы цеплять и сколько реплик будет
+kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: metricsdemo
@@ -6,9 +7,9 @@ metadata:
   labels:
     app: web
 spec:
-  replicas: 2 # сколько подов поднять (инстансов образов)
+  replicas: 2 # сколько подов поднять (инстансов запущенных приложений)
 
-  # селектор решает, на какие шаблоны распространаяется деплой
+  # селектор решает, на какие шаблоны распространяется  деплой
   selector:
     matchLabels:
       app: metricsdemo
@@ -16,7 +17,7 @@ spec:
   template:
     metadata:
       labels:
-        app: metricsdemo # по этой метке ищет selector
+        app: metricsdemo # по этой метке ищет selector в kind: Service
     spec:
       containers:
       - name: metricsdemo # имя деплоя
@@ -30,19 +31,19 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: metricsdemo #__meta_kubernetes_service_name="metricsdemo"
+  name: metricsdemo # имя для прометеуса __meta_kubernetes_service_name="metricsdemo", см https://prometheus.io/docs/prometheus/latest/configuration/configuration/#kubernetes_sd_config
   labels:
-    apptype: business #__meta_kubernetes_service_label_apptype="business"
-    instancetype: web #__meta_kubernetes_service_label_instancetype="web"
+    apptype: business # имя для прометеуса __meta_kubernetes_service_label_apptype="business"
+    instancetype: web # имя для прометеуса __meta_kubernetes_service_label_instancetype="web"
 spec:
   selector:
     app: metricsdemo # селектор приложений по labels:app
   type: LoadBalancer # реверспрокси из вне до подов
   ports:
-  - protocol: TCP # _meta_kubernetes_service_port_protocol="TCP"
+  - protocol: TCP # имя для прометеуса _meta_kubernetes_service_port_protocol="TCP"
     port: 9376
     targetPort: 80
-    name: portapi # __meta_kubernetes_service_port_name="portapi"
+    name: portapi # имя для прометеуса __meta_kubernetes_service_port_name="portapi"
 
 # docker build -t metricsdemo3 .
 # docker tag metricsdemo3 localhost:5000/sansys/metricsdemo3
