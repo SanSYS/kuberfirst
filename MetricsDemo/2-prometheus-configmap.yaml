@@ -21,7 +21,7 @@ data:
     - job_name: business-metrics
       metrics_path: /metrics
       kubernetes_sd_configs:
-        - role: endpoints
+        - role: endpoints # ещё есть service,pod,ingress https://prometheus.io/docs/prometheus/latest/configuration/configuration/#kubernetes_sd_config
       static_configs:
       - targets:
         - localhost:9090

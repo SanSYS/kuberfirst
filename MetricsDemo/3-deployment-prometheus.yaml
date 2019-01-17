@@ -1,0 +1,43 @@
+﻿apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus
+          args:
+            - "--config.file=/etc/config/prometheus.yml"
+            - "--web.enable-lifecycle"
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/config/
+      volumes:
+        - name: prometheus-config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-config
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus
+spec:
+  selector:
+    app: prometheus-server # селектор приложений по labels:app
+  type: LoadBalancer # реверспрокси из вне до подов
+  ports:
+  - protocol: TCP
+    port: 9090
+    targetPort: 9090
