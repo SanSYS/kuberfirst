@@ -1,0 +1,133 @@
+﻿kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: metricsdemo
+  #namespace: deployment-demo
+  labels:
+    app: web
+spec:
+  replicas: 2 # сколько подов поднять (инстансов образов)
+
+  # селектор решает, на какие шаблоны распространаяется деплой
+  selector:
+    matchLabels:
+      app: metricsdemo
+
+  template:
+    metadata:
+      labels:
+        app: metricsdemo # по этой метке ищет selector
+    spec:
+      containers:
+      - name: metricsdemo # имя деплоя
+        image: localhost:5000/sansys/metricsdemo3 # образ в докере
+        ports:
+        - containerPort: 80 # какой порт слушает приложение внутри докера
+
+# ВАЖНО: три дефиса делят файл, как бы на два отдельных ямла
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: metricsdemo
+spec:
+  selector:
+    app: metricsdemo # селектор приложений по labels:app
+  type: LoadBalancer # реверспрокси из вне до подов
+  ports:
+  - protocol: TCP
+    port: 9376
+    targetPort: 80
+    name: portapi
+  - protocol: TCP
+    port: 9090
+    targetPort: 80
+    name: portmetrics
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: prometh1
+  #namespace: deployment-demo
+  labels:
+    app: webpromtest
+spec:
+  replicas: 2 # сколько подов поднять (инстансов образов)
+
+  # селектор решает, на какие шаблоны распространаяется деплой
+  selector:
+    matchLabels:
+      app: prometh1
+
+  template:
+    metadata:
+      labels:
+        app: prometh1 # по этой метке ищет selector
+    spec:
+      containers:
+      - name: prometh1 # имя деплоя
+        image: prom/prometheus # образ в докере
+        ports:
+        - containerPort: 9090 # какой порт слушает приложение внутри докера
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+  namespace: default
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus
+          args:
+            - "--config.file=/etc/config/prometheus.yml"
+            - "--web.enable-lifecycle"
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/config/
+      volumes:
+        - name: prometheus-config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-config
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-server
+spec:
+  selector:
+    app: prometheus-server # селектор приложений по labels:app
+  type: LoadBalancer # реверспрокси из вне до подов
+  ports:
+  - protocol: TCP
+    port: 19090
+    targetPort: 9090
+
+# docker build -t metricsdemo3 .
+# docker tag metricsdemo3 localhost:5000/sansys/metricsdemo3
+# docker push localhost:5000/sansys/metricsdemo3
+
+# kubectl create -f deployment.yaml	- создание
+# kubectl delete -f deployment.yaml	- удаление
+
+# kubectl delete deployment metricsdemo	- удаление только деплоенного (подов)
+# kubectl delete service metricsdemo		- удаление только сервисов
+
+# kubectl get deployments	- список задеплоенного
+# kubectl get services		- список сервисов

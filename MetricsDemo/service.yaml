@@ -1,0 +1,12 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: metricsdemo4
+spec:
+  selector:
+    app: metricsdemo4
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 9376
+    targetPort: 80
