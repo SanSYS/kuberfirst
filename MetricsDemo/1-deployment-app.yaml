@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: metricsdemo # имя деплоя
-        image: localhost:5000/sansys/metricsdemo3 # образ в докере
+        image: localhost:5000/sansys/metricsdemo3:1 # образ в докере
         ports:
         - containerPort: 80 # какой порт слушает приложение внутри докера
 
