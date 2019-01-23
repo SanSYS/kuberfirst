@@ -21,9 +21,21 @@ spec:
     spec:
       containers:
       - name: metricsdemo # имя деплоя
-        image: localhost:5000/sansys/metricsdemo3:1 # образ в докере
+        image: localhost:5000/sansys/metricsdemo3:6 # образ в докере
         ports:
         - containerPort: 80 # какой порт слушает приложение внутри докера
+        readinessProbe: # способно ли приложение сейчас обрабатывать запросы
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:  # живо ли приложение в принципе
+          httpGet:
+            path: /api/job/alive/check
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
 
 # ВАЖНО: три дефиса делят файл, как бы на два отдельных ямла
 ---

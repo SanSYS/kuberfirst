@@ -28,22 +28,16 @@ spec:
             cpu: 100m
             memory: 100Mi
         env:
-          # The following env variables set up basic auth twith the default admin user and admin password.
           - name: GF_AUTH_BASIC_ENABLED
             value: "true"
           - name: GF_AUTH_ANONYMOUS_ENABLED
-            value: "false"
-          # - name: GF_AUTH_ANONYMOUS_ORG_ROLE
-          #   value: Admin
-          # does not really work, because of template variables in exported dashboards:
-          # - name: GF_DASHBOARDS_JSON_ENABLED
-          #   value: "true"
+            value: "true"
+          - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+            value: Admin
         readinessProbe:
           httpGet:
             path: /login
             port: 3000
-          # initialDelaySeconds: 30
-          # timeoutSeconds: 1
         volumeMounts:
         - name: grafana-provisioning-datasources
           mountPath: /etc/grafana/provisioning/datasources/

@@ -17,3 +17,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "MetricsDemo.dll"]
+
+# docker build -t metricsdemo3 .
+# docker tag metricsdemo3 localhost:5000/sansys/metricsdemo3:5
+# docker push localhost:5000/sansys/metricsdemo3:5

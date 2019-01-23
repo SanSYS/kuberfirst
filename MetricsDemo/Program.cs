@@ -25,7 +25,7 @@ namespace MetricsDemo
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             Metrics = new MetricsBuilder()
-                .Report.ToConsole()
+                //.Report.ToConsole()
                 .OutputMetrics.AsPrometheusPlainText()
                 .Configuration.Configure(p =>
                 {
@@ -44,7 +44,7 @@ namespace MetricsDemo
                         builder.OutputHealth.AsPlainText();
 
                         builder.HealthChecks.AddCheck("Database connect", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
-                        builder.HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(1));
+                        //builder.HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(1));
 
                         builder.Report.Using(new MetricHealthReporter(Metrics) { ReportInterval = TimeSpan.FromSeconds(5) });
                     })
